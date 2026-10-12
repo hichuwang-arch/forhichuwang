@@ -139,37 +139,28 @@
                         tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-gray-400">目前沒有任何跟團紀錄喔！</td></tr>`;
                     } else {
                         data.forEach(item => {
-                            // 正確對應你試算表上的中文欄位
-                            let dateVal = item["跟團日期"] || '';
-                            let groupNameVal = item["團體名稱"] || '';
-                            let itemNameVal = item["品項名稱"] || '';
-                            let sourceVal = item["跟團群組"] || '';
-                            let amountVal = Number(item["金額價格"] || 0);
-                            let payStatusVal = item["付款狀態"] || '未付款';
-                            let shipStatusVal = item["物流狀態"] || '待到貨';
-                            let remarkVal = item["備註"] || '';
-
+                            let amountVal = Number(item.amount || 0);
                             totalAmount += amountVal;
                             
-                            let payBadgeColor = payStatusVal === '已付款' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700';
-                            let shipBadgeColor = shipStatusVal === '已收件' ? 'bg-blue-100 text-blue-700' : 'bg-indigo-100 text-indigo-700';
+                            let payBadgeColor = item.payStatus === '已付款' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700';
+                            let shipBadgeColor = item.shipStatus === '已收件' ? 'bg-blue-100 text-blue-700' : 'bg-indigo-100 text-indigo-700';
 
                             let tr = document.createElement('tr');
                             tr.innerHTML = `
                                 <td class="p-3">
-                                    <div class="text-xs text-gray-400">${dateVal ? String(dateVal).substring(0, 10) : ''}</div>
-                                    <div class="font-bold text-blue-600">${groupNameVal}</div>
+                                    <div class="text-xs text-gray-400">${item.date ? String(item.date).substring(0, 10) : ''}</div>
+                                    <div class="font-bold text-blue-600">${item.groupName || ''}</div>
                                 </td>
                                 <td class="p-3">
-                                    <div class="font-medium text-gray-800">${itemNameVal}</div>
-                                    <div class="text-xs text-gray-500">${sourceVal}</div>
+                                    <div class="font-medium text-gray-800">${item.itemName || ''}</div>
+                                    <div class="text-xs text-gray-500">${item.source || ''}</div>
                                 </td>
                                 <td class="p-3 font-semibold text-gray-700">NT$ ${amountVal.toLocaleString()}</td>
                                 <td class="p-3 space-y-1">
-                                    <span class="inline-block px-2 py-0.5 rounded text-xs ${payBadgeColor}">${payStatusVal}</span><br>
-                                    <span class="inline-block px-2 py-0.5 rounded text-xs ${shipBadgeColor}">${shipStatusVal}</span>
+                                    <span class="inline-block px-2 py-0.5 rounded text-xs ${payBadgeColor}">${item.payStatus || ''}</span><br>
+                                    <span class="inline-block px-2 py-0.5 rounded text-xs ${shipBadgeColor}">${item.shipStatus || ''}</span>
                                 </td>
-                                <td class="p-3 text-xs text-gray-500 max-w-xs truncate">${remarkVal || '-'}</td>
+                                <td class="p-3 text-xs text-gray-500 max-w-xs truncate">${item.remark || '-'}</td>
                             `;
                             tbody.appendChild(tr);
                         });
