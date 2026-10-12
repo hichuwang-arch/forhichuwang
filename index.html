@@ -95,7 +95,7 @@
                 </form>
             </div>
 
-            <!-- 右側：跟團清單列表與縮小後的總金額統計卡片 -->
+            <!-- 右側：跟團清單列表與極精簡的總金額標籤 -->
             <div class="lg:col-span-2 space-y-4">
                 <div class="bg-white rounded-2xl shadow-md p-6 border border-blue-100">
                     <div class="flex justify-between items-center mb-4">
@@ -123,16 +123,14 @@
                     </div>
                 </div>
 
-                <!-- 縮小後的總金額統計卡片 (padding 改為 py-3 px-4) -->
-                <div class="bg-white rounded-xl shadow-sm py-3 px-6 flex justify-center items-center border border-blue-100 max-w-sm ml-auto">
-                    <div class="text-center">
-                        <div class="flex items-center justify-center space-x-2">
-                            <span class="text-xs text-gray-500" id="statAmountTitle">周邊總花費 (含二補)</span>
-                            <button onclick="toggleAmountVisibility()" id="toggleBtn" class="text-[10px] bg-gray-100 hover:bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded transition">
-                                👁️ 顯示
-                            </button>
-                        </div>
-                        <p id="totalAmount" class="text-xl font-bold text-indigo-600 mt-0.5">NT$ ****</p>
+                <!-- 極精簡的總金額小標籤 -->
+                <div class="bg-white rounded-lg shadow-sm py-2 px-4 inline-block ml-auto border border-blue-100 float-right">
+                    <div class="flex items-center space-x-3">
+                        <span class="text-xs text-gray-500" id="statAmountTitle">周邊總花費</span>
+                        <p id="totalAmount" class="text-lg font-bold text-indigo-600">NT$ ****</p>
+                        <button onclick="toggleAmountVisibility()" id="toggleBtn" class="text-[10px] bg-gray-100 hover:bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded transition">
+                            👁️ 顯示
+                        </button>
                     </div>
                 </div>
             </div>
@@ -182,12 +180,12 @@
                 tabPeripheral.className = "px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-blue-600 text-white";
                 tabTicket.className = "px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-white text-gray-600 border border-blue-200 hover:bg-blue-50";
                 tableTitle.innerText = "📋 📦 周邊清單";
-                statAmountTitle.innerText = "周邊總花費 (含二補)";
+                statAmountTitle.innerText = "周邊總花費";
             } else {
                 tabTicket.className = "px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-blue-600 text-white";
                 tabPeripheral.className = "px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-white text-gray-600 border border-blue-200 hover:bg-blue-50";
                 tableTitle.innerText = "📋 🎫 票卷清單";
-                statAmountTitle.innerText = "票卷總花費 (含二補)";
+                statAmountTitle.innerText = "票卷總花費";
             }
 
             renderTable();
