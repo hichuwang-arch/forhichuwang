@@ -10,7 +10,7 @@
     <div class="container mx-auto px-4 py-8 max-w-5xl">
         <header class="text-center mb-6">
             <h1 class="text-3xl font-bold text-blue-600 mb-2">✨Zoeeeeee的跟團紀錄✨</h1>
-            <p class="text-gray-500">心靈愉快但錢包極度痛苦！</p>
+            <p class="text-gray-500">錢包痛苦！</p>
         </header>
 
         <!-- 分頁切換按鈕 -->
@@ -58,7 +58,7 @@
                             <input type="text" id="amount" placeholder="例如：500 或 待定" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-600 mb-1">二補金額</label>
+                            <label class="block text-sm font-medium text-gray-600 mb-1">二補金額 (可空白)</label>
                             <input type="text" id="secondAmount" placeholder="例如：50 或 空白" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
                         </div>
                     </div>
@@ -67,10 +67,8 @@
                             <label class="block text-sm font-medium text-gray-600 mb-1">付款狀態</label>
                             <select id="payStatus" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
                                 <option value="已付款">已付款</option>
-                                <option value="已付訂金">已付訂金</option>
                                 <option value="未付款">未付款</option>
                                 <option value="已付款等待二補下單">已付款等待二補下單</option>
-                                 <option value="已下單未付款(賣貨)">已下單未付款(賣貨)</option>
                             </select>
                         </div>
                         <div>
@@ -79,8 +77,6 @@
                                 <option value="待到貨">待到貨</option>
                                 <option value="已收件">已收件</option>
                                 <option value="面交">面交</option>
-                                <option value="票卷序號已給">票卷序號已給</option>
-                                <option value="票卷序號未給">票卷序號未給</option>
                             </select>
                         </div>
                     </div>
@@ -99,8 +95,8 @@
                 </form>
             </div>
 
-            <!-- 右側：跟團清單列表與總金額統計卡片 -->
-            <div class="lg:col-span-2 space-y-6">
+            <!-- 右側：跟團清單列表與縮小後的總金額統計卡片 -->
+            <div class="lg:col-span-2 space-y-4">
                 <div class="bg-white rounded-2xl shadow-md p-6 border border-blue-100">
                     <div class="flex justify-between items-center mb-4">
                         <h2 id="tableTitle" class="text-xl font-bold text-gray-700">📋 📦 周邊清單</h2>
@@ -127,21 +123,16 @@
                     </div>
                 </div>
 
-                <!-- 移到下方的總金額統計卡片 -->
-                <div class="bg-white rounded-2xl shadow-md p-6 flex flex-col sm:flex-row justify-around items-center border border-blue-100">
-                    <div class="text-center mb-4 sm:mb-0">
-                        <p class="text-sm text-gray-500" id="statTitle">周邊總筆數</p>
-                        <p id="totalCount" class="text-2xl font-bold text-blue-600">0 筆</p>
-                    </div>
-                    <div class="h-10 w-px bg-gray-200 hidden sm:block"></div>
+                <!-- 縮小後的總金額統計卡片 (padding 改為 py-3 px-4) -->
+                <div class="bg-white rounded-xl shadow-sm py-3 px-6 flex justify-center items-center border border-blue-100 max-w-sm ml-auto">
                     <div class="text-center">
-                        <div class="flex items-center justify-center space-x-2 mb-1">
-                            <p class="text-sm text-gray-500" id="statAmountTitle">周邊總花費 (含二補)</p>
-                            <button onclick="toggleAmountVisibility()" id="toggleBtn" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-2 py-0.5 rounded transition">
+                        <div class="flex items-center justify-center space-x-2">
+                            <span class="text-xs text-gray-500" id="statAmountTitle">周邊總花費 (含二補)</span>
+                            <button onclick="toggleAmountVisibility()" id="toggleBtn" class="text-[10px] bg-gray-100 hover:bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded transition">
                                 👁️ 顯示
                             </button>
                         </div>
-                        <p id="totalAmount" class="text-2xl font-bold text-indigo-600">NT$ ****</p>
+                        <p id="totalAmount" class="text-xl font-bold text-indigo-600 mt-0.5">NT$ ****</p>
                     </div>
                 </div>
             </div>
@@ -170,11 +161,11 @@
             if (isAmountVisible) {
                 totalAmountEl.innerText = 'NT$ ' + calculatedTotalAmount.toLocaleString();
                 toggleBtn.innerText = '🔒 隱藏';
-                toggleBtn.className = "text-xs bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-2 py-0.5 rounded transition";
+                toggleBtn.className = "text-[10px] bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-1.5 py-0.5 rounded transition";
             } else {
                 totalAmountEl.innerText = 'NT$ ****';
                 toggleBtn.innerText = '👁️ 顯示';
-                toggleBtn.className = "text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-2 py-0.5 rounded transition";
+                toggleBtn.className = "text-[10px] bg-gray-100 hover:bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded transition";
             }
         }
 
@@ -183,7 +174,6 @@
             const tabPeripheral = document.getElementById('tabPeripheral');
             const tabTicket = document.getElementById('tabTicket');
             const tableTitle = document.getElementById('tableTitle');
-            const statTitle = document.getElementById('statTitle');
             const statAmountTitle = document.getElementById('statAmountTitle');
 
             document.getElementById('category').value = tab;
@@ -192,13 +182,11 @@
                 tabPeripheral.className = "px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-blue-600 text-white";
                 tabTicket.className = "px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-white text-gray-600 border border-blue-200 hover:bg-blue-50";
                 tableTitle.innerText = "📋 📦 周邊清單";
-                statTitle.innerText = "周邊總筆數";
                 statAmountTitle.innerText = "周邊總花費 (含二補)";
             } else {
                 tabTicket.className = "px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-blue-600 text-white";
                 tabPeripheral.className = "px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-white text-gray-600 border border-blue-200 hover:bg-blue-50";
                 tableTitle.innerText = "📋 🎫 票卷清單";
-                statTitle.innerText = "票卷總筆數";
                 statAmountTitle.innerText = "票卷總花費 (含二補)";
             }
 
@@ -278,8 +266,6 @@
                 });
             }
 
-            document.getElementById('totalCount').innerText = totalCount + ' 筆';
-            
             const totalAmountEl = document.getElementById('totalAmount');
             if (isAmountVisible) {
                 totalAmountEl.innerText = 'NT$ ' + calculatedTotalAmount.toLocaleString();
