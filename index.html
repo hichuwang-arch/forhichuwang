@@ -8,20 +8,30 @@
 </head>
 <body class="bg-blue-50 min-h-screen font-sans text-gray-800">
     <div class="container mx-auto px-4 py-8 max-w-5xl">
-        <header class="text-center mb-8">
+        <header class="text-center mb-6">
             <h1 class="text-3xl font-bold text-blue-600 mb-2">✨Zoeeeeee的跟團紀錄✨</h1>
-            <p class="text-gray-500">!心靈愉快但錢包痛苦！</p>
+            <p class="text-gray-500">錢包痛苦！</p>
         </header>
+
+        <!-- 分頁切換按鈕 -->
+        <div class="flex justify-center space-x-4 mb-6">
+            <button onclick="switchTab('周邊')" id="tabPeripheral" class="px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-blue-600 text-white">
+                📦 周邊紀錄
+            </button>
+            <button onclick="switchTab('票卷')" id="tabTicket" class="px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-white text-gray-600 border border-blue-200 hover:bg-blue-50">
+                🎫 票卷紀錄
+            </button>
+        </div>
 
         <!-- 總金額統計卡片 -->
         <div class="bg-white rounded-2xl shadow-md p-6 mb-8 flex flex-col sm:flex-row justify-around items-center border border-blue-100">
             <div class="text-center mb-4 sm:mb-0">
-                <p class="text-sm text-gray-500">跟團總筆數</p>
+                <p class="text-sm text-gray-500" id="statTitle">周邊總筆數</p>
                 <p id="totalCount" class="text-2xl font-bold text-blue-600">0 筆</p>
             </div>
             <div class="h-10 w-px bg-gray-200 hidden sm:block"></div>
             <div class="text-center">
-                <p class="text-sm text-gray-500">總花費金額 (含二補)</p>
+                <p class="text-sm text-gray-500" id="statAmountTitle">周邊總花費 (含二補)</p>
                 <p id="totalAmount" class="text-2xl font-bold text-indigo-600">NT$ 0</p>
             </div>
         </div>
@@ -33,6 +43,13 @@
                 <form id="orderForm" class="space-y-4">
                     <input type="hidden" id="editId" value="">
                     <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-1">記錄分類</label>
+                        <select id="category" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                            <option value="周邊">📦 周邊</option>
+                            <option value="票卷">🎫 票卷</option>
+                        </select>
+                    </div>
+                    <div>
                         <label class="block text-sm font-medium text-gray-600 mb-1">跟團日期</label>
                         <input type="date" id="date" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
                     </div>
@@ -42,11 +59,11 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-600 mb-1">品項名稱</label>
-                        <input type="text" id="itemName" placeholder="例如：83z手燈" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                        <input type="text" id="itemName" placeholder="例如：83z手燈 / 演唱會門票" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-600 mb-1">開團來源</label>
-                        <input type="text" id="source" placeholder="例如：代購小幫手" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                        <input type="text" id="source" placeholder="例如：代購小幫手 / 拓元" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
@@ -77,8 +94,8 @@
                         </div>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-600 mb-1">備註</label>
-                        <textarea id="remark" rows="2" placeholder="例如：後五碼 12345" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"></textarea>
+                        <label class="block text-sm font-medium text-gray-600 mb-1">備註 (選填)</label>
+                        <textarea id="remark" rows="2" placeholder="例如：座位號碼、後五碼" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"></textarea>
                     </div>
                     <div class="flex space-x-2">
                         <button type="submit" id="submitBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 shadow-md">
@@ -94,7 +111,7 @@
             <!-- 右側：跟團清單列表 -->
             <div class="bg-white rounded-2xl shadow-md p-6 border border-blue-100 lg:col-span-2">
                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold text-gray-700">📋 我的跟團清單</h2>
+                    <h2 id="tableTitle" class="text-xl font-bold text-gray-700">📋 📦 周邊清單</h2>
                     <button onclick="loadData()" class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1 rounded-lg transition">重新整理</button>
                 </div>
                 
@@ -111,7 +128,7 @@
                                 <th class="p-3 text-center">操作</th>
                             </tr>
                         </thead>
-                        <tbody id="orderTableBody" class="text-sm divide-y">
+                        <tbody id="orderTableBody" class="text-base divide-y">
                             <!-- 資料會透過 JavaScript 填入 -->
                         </tbody>
                     </table>
@@ -124,6 +141,7 @@
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwO1NkMRVwy2EEp5N3N9-MA7icAmZOxaMGV3kxTAg7yjyDewf8-PWcuW8lUxqIBtuT-LQ/exec';
 
         let allDataCache = [];
+        let currentTab = '周邊'; // 預設目前分頁
 
         document.getElementById('date').valueAsDate = new Date();
 
@@ -131,6 +149,36 @@
             loadData();
         };
 
+        // 切換分頁
+        function switchTab(tab) {
+            currentTab = tab;
+            const tabPeripheral = document.getElementById('tabPeripheral');
+            const tabTicket = document.getElementById('tabTicket');
+            const tableTitle = document.getElementById('tableTitle');
+            const statTitle = document.getElementById('statTitle');
+            const statAmountTitle = document.getElementById('statAmountTitle');
+
+            // 自動連動表單預設分類
+            document.getElementById('category').value = tab;
+
+            if (tab === '周邊') {
+                tabPeripheral.className = "px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-blue-600 text-white";
+                tabTicket.className = "px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-white text-gray-600 border border-blue-200 hover:bg-blue-50";
+                tableTitle.innerText = "📋 📦 周邊清單";
+                statTitle.innerText = "周邊總筆數";
+                statAmountTitle.innerText = "周邊總花費 (含二補)";
+            } else {
+                tabTicket.className = "px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-blue-600 text-white";
+                tabPeripheral.className = "px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-white text-gray-600 border border-blue-200 hover:bg-blue-50";
+                tableTitle.innerText = "📋 🎫 票卷清單";
+                statTitle.innerText = "票卷總筆數";
+                statAmountTitle.innerText = "票卷總花費 (含二補)";
+            }
+
+            renderTable();
+        }
+
+        // 載入資料
         function loadData() {
             const loading = document.getElementById('loading');
             const tableContainer = document.getElementById('tableContainer');
@@ -141,64 +189,76 @@
                 .then(response => response.json())
                 .then(data => {
                     allDataCache = data;
-                    const tbody = document.getElementById('orderTableBody');
-                    tbody.innerHTML = '';
-                    
-                    let totalCount = data.length;
-                    let totalAmount = 0;
-
-                    if (totalCount === 0) {
-                        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-gray-400">目前沒有任何跟團紀錄喔！</td></tr>`;
-                    } else {
-                        data.forEach(item => {
-                            let mainAmount = isNaN(Number(item.amount)) ? 0 : Number(item.amount);
-                            let secondAmount = isNaN(Number(item.secondAmount)) || item.secondAmount === '' ? 0 : Number(item.secondAmount);
-                            totalAmount += (mainAmount + secondAmount);
-                            
-                            let payBadgeColor = item.payStatus === '已付款' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700';
-                            let shipBadgeColor = item.shipStatus === '已收件' ? 'bg-blue-100 text-blue-700' : 'bg-indigo-100 text-indigo-700';
-
-                            let amountDisplay = isNaN(Number(item.amount)) || item.amount === '' ? (item.amount || '待定') : `NT$ ${Number(item.amount).toLocaleString()}`;
-                            let secondDisplay = (item.secondAmount !== '' && item.secondAmount !== 0 && !isNaN(Number(item.secondAmount))) ? `<br><span class="text-xs text-purple-600">二補: NT$ ${Number(item.secondAmount).toLocaleString()}</span>` : '';
-
-                            let tr = document.createElement('tr');
-                            tr.innerHTML = `
-                                <td class="p-3">
-                                    <div class="text-xs text-gray-400">${item.date ? String(item.date).substring(0, 10) : ''}</div>
-                                    <div class="font-bold text-blue-600">${item.groupName || ''}</div>
-                                </td>
-                                <td class="p-3">
-                                    <div class="font-medium text-gray-800">${item.itemName || ''}</div>
-                                    <div class="text-xs text-gray-500">${item.source || ''}</div>
-                                    <div class="text-xs text-gray-400 truncate max-w-xs">備註: ${item.remark || '-'}</div>
-                                </td>
-                                <td class="p-3 font-semibold text-gray-700">
-                                    ${amountDisplay}
-                                    ${secondDisplay}
-                                </td>
-                                <td class="p-3 space-y-1">
-                                    <span class="inline-block px-2 py-0.5 rounded text-xs ${payBadgeColor}">${item.payStatus || ''}</span><br>
-                                    <span class="inline-block px-2 py-0.5 rounded text-xs ${shipBadgeColor}">${item.shipStatus || ''}</span>
-                                </td>
-                                <td class="p-3 text-center space-x-1">
-                                    <button onclick="editItem('${item.id}')" class="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 text-xs px-2 py-1 rounded transition">修改</button>
-                                    <button onclick="deleteItem('${item.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 text-xs px-2 py-1 rounded transition">刪除</button>
-                                </td>
-                            `;
-                            tbody.appendChild(tr);
-                        });
-                    }
-
-                    document.getElementById('totalCount').innerText = totalCount + ' 筆';
-                    document.getElementById('totalAmount').innerText = 'NT$ ' + totalAmount.toLocaleString();
-
-                    loading.style.display = 'none';
-                    tableContainer.classList.remove('hidden');
+                    renderTable();
                 })
                 .catch(error => {
                     console.error('Error:', error);
                     loading.innerText = '載入資料失敗，請檢查網址或重新整理。';
                 });
+        }
+
+        // 根據目前分頁渲染表格與統計
+        function renderTable() {
+            const loading = document.getElementById('loading');
+            const tableContainer = document.getElementById('tableContainer');
+            const tbody = document.getElementById('orderTableBody');
+            tbody.innerHTML = '';
+
+            // 過濾出目前分頁的資料
+            const filteredData = allDataCache.filter(item => (item.category || '周邊') === currentTab);
+            
+            let totalCount = filteredData.length;
+            let totalAmount = 0;
+
+            if (totalCount === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-gray-400">目前沒有${currentTab}紀錄喔！</td></tr>`;
+            } else {
+                filteredData.forEach(item => {
+                    let mainAmount = isNaN(Number(item.amount)) ? 0 : Number(item.amount);
+                    let secondAmount = isNaN(Number(item.secondAmount)) || item.secondAmount === '' ? 0 : Number(item.secondAmount);
+                    totalAmount += (mainAmount + secondAmount);
+                    
+                    let payBadgeColor = item.payStatus === '已付款' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700';
+                    let shipBadgeColor = item.shipStatus === '已收件' ? 'bg-blue-100 text-blue-700' : 'bg-indigo-100 text-indigo-700';
+
+                    let amountDisplay = isNaN(Number(item.amount)) || item.amount === '' ? (item.amount || '待定') : `NT$ ${Number(item.amount).toLocaleString()}`;
+                    let secondDisplay = (item.secondAmount !== '' && item.secondAmount !== 0 && !isNaN(Number(item.secondAmount))) ? `<br><span class="text-sm text-purple-600">二補: NT$ ${Number(item.secondAmount).toLocaleString()}</span>` : '';
+
+                    let remarkDisplay = (item.remark && item.remark.trim() !== '') ? `<div class="text-sm text-gray-500 mt-1">備註: ${item.remark}</div>` : '';
+
+                    let tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="p-3 align-top">
+                            <div class="text-xs text-gray-400">${item.date ? String(item.date).substring(0, 10) : ''}</div>
+                            <div class="font-bold text-blue-600 text-lg">${item.groupName || ''}</div>
+                        </td>
+                        <td class="p-3 align-top">
+                            <div class="font-medium text-gray-900">${item.itemName || ''}</div>
+                            <div class="text-sm text-gray-500">${item.source || ''}</div>
+                            ${remarkDisplay}
+                        </td>
+                        <td class="p-3 align-top font-semibold text-gray-700">
+                            ${amountDisplay}
+                            ${secondDisplay}
+                        </td>
+                        <td class="p-3 align-top space-y-1">
+                            <span class="inline-block px-2 py-0.5 rounded text-xs ${payBadgeColor}">${item.payStatus || ''}</span><br>
+                            <span class="inline-block px-2 py-0.5 rounded text-xs ${shipBadgeColor}">${item.shipStatus || ''}</span>
+                        </td>
+                        <td class="p-3 align-top text-center space-x-1">
+                            <button onclick="editItem('${item.id}')" class="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 text-xs px-2.5 py-1.5 rounded transition">修改</button>
+                            <button onclick="deleteItem('${item.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 text-xs px-2.5 py-1.5 rounded transition">刪除</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            document.getElementById('totalCount').innerText = totalCount + ' 筆';
+            document.getElementById('totalAmount').innerText = 'NT$ ' + totalAmount.toLocaleString();
+
+            loading.style.display = 'none';
+            tableContainer.classList.remove('hidden');
         }
 
         // 點擊修改按鈕
@@ -207,6 +267,7 @@
             if (!item) return;
 
             document.getElementById('editId').value = item.id;
+            document.getElementById('category').value = item.category || '周邊';
             document.getElementById('date').value = item.date ? String(item.date).substring(0, 10) : '';
             document.getElementById('groupName').value = item.groupName || '';
             document.getElementById('itemName').value = item.itemName || '';
@@ -228,6 +289,7 @@
         function resetForm() {
             document.getElementById('orderForm').reset();
             document.getElementById('editId').value = '';
+            document.getElementById('category').value = currentTab; // 維持目前分頁
             document.getElementById('date').valueAsDate = new Date();
             document.getElementById('secondAmount').value = '';
             document.getElementById('formTitle').innerText = '📝 新增跟團紀錄';
@@ -237,7 +299,7 @@
 
         // 刪除資料
         function deleteItem(id) {
-            if (!confirm('確定要刪除這筆跟團紀錄嗎？')) return;
+            if (!confirm('確定要刪除這筆紀錄嗎？')) return;
 
             fetch(SCRIPT_URL, {
                 method: 'POST',
@@ -269,6 +331,7 @@
             const formData = {
                 action: editId ? 'update' : 'create',
                 id: editId,
+                category: document.getElementById('category').value,
                 date: document.getElementById('date').value,
                 groupName: document.getElementById('groupName').value,
                 itemName: document.getElementById('itemName').value,
@@ -287,7 +350,7 @@
             .then(response => response.json())
             .then(result => {
                 if (result.status === 'success') {
-                    alert(editId ? '✨ 成功修改跟團紀錄！' : '✨ 成功新增跟團紀錄！');
+                    alert(editId ? '✨ 成功修改紀錄！' : '✨ 成功新增紀錄！');
                     resetForm();
                     loadData();
                 } else {
