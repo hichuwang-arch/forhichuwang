@@ -13,131 +13,143 @@
             <p class="text-gray-500">追星之路心靈富足但錢包極度痛苦rrrrr！</p>
         </header>
 
-        <!-- 分頁切換按鈕 -->
-        <div class="flex justify-center space-x-4 mb-6">
-            <button onclick="switchTab('周邊')" id="tabPeripheral" class="px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-blue-600 text-white">
-                📦 周邊紀錄
-            </button>
-            <button onclick="switchTab('票卷')" id="tabTicket" class="px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-white text-gray-600 border border-blue-200 hover:bg-blue-50">
-                🎫 票卷紀錄
+        <!-- 分頁切換與新增按鈕列 -->
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+            <!-- 分頁切換按鈕 -->
+            <div class="flex space-x-4">
+                <button onclick="switchTab('周邊')" id="tabPeripheral" class="px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-blue-600 text-white">
+                    📦 周邊紀錄
+                </button>
+                <button onclick="switchTab('票卷')" id="tabTicket" class="px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-white text-gray-600 border border-blue-200 hover:bg-blue-50">
+                    🎫 票卷紀錄
+                </button>
+            </div>
+
+            <!-- 新增紀錄按鈕 -->
+            <button onclick="openModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2.5 rounded-xl shadow-md transition flex items-center space-x-2">
+                <span>➕ 新增紀錄</span>
             </button>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- 左側：新增/修改表單 -->
-            <div class="bg-white rounded-2xl shadow-md p-6 border border-blue-100 lg:col-span-1">
-                <h2 id="formTitle" class="text-xl font-bold text-gray-700 mb-4 flex items-center">📝 新增跟團紀錄</h2>
-                <form id="orderForm" class="space-y-4">
-                    <input type="hidden" id="editId" value="">
+        <!-- 全版面清單與極精簡總金額標籤 -->
+        <div class="space-y-4">
+            <div class="bg-white rounded-2xl shadow-md p-6 border border-blue-100">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 id="tableTitle" class="text-xl font-bold text-gray-700">📋 📦 周邊清單</h2>
+                    <button onclick="loadData()" class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1 rounded-lg transition">重新整理</button>
+                </div>
+                
+                <div id="loading" class="text-center py-10 text-gray-400">載入資料中...</div>
+
+                <div class="overflow-x-auto hidden" id="tableContainer">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b bg-blue-50 text-xs text-gray-600 uppercase">
+                                <th class="p-3">日期/團體</th>
+                                <th class="p-3">品項 / 來源</th>
+                                <th class="p-3">金額 / 二補</th>
+                                <th class="p-3">狀態</th>
+                                <th class="p-3 text-center">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orderTableBody" class="text-base divide-y">
+                            <!-- 資料會透過 JavaScript 填入 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 極精簡的總金額小標籤 -->
+            <div class="bg-white rounded-lg shadow-sm py-2 px-4 inline-block ml-auto border border-blue-100 float-right">
+                <div class="flex items-center space-x-3">
+                    <span class="text-xs text-gray-500" id="statAmountTitle">周邊總花費</span>
+                    <p id="totalAmount" class="text-lg font-bold text-indigo-600">NT$ ****</p>
+                    <button onclick="toggleAmountVisibility()" id="toggleBtn" class="text-[10px] bg-gray-100 hover:bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded transition">
+                        👁️ 顯示
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 彈跳視窗 (Modal) -->
+    <div id="recordModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden p-4">
+        <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-lg border border-blue-100 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="formTitle" class="text-xl font-bold text-gray-700 flex items-center">📝 新增跟團紀錄</h2>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
+            </div>
+            
+            <form id="orderForm" class="space-y-4">
+                <input type="hidden" id="editId" value="">
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1">記錄分類</label>
+                    <select id="category" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                        <option value="周邊">📦 周邊</option>
+                        <option value="票卷">🎫 票卷</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1">跟團日期</label>
+                    <input type="date" id="date" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1">偶像 / 團體名稱</label>
+                    <input type="text" id="groupName" placeholder="例如：Super Junior" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1">品項名稱</label>
+                    <input type="text" id="itemName" placeholder="例如：83z手燈 / 演唱會門票" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1">開團來源</label>
+                    <input type="text" id="source" placeholder="例如：代購小幫手 / 拓元" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="block text-sm font-medium text-gray-600 mb-1">記錄分類</label>
-                        <select id="category" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
-                            <option value="周邊">📦 周邊</option>
-                            <option value="票卷">🎫 票卷</option>
+                        <label class="block text-sm font-medium text-gray-600 mb-1">金額</label>
+                        <input type="text" id="amount" placeholder="例如：500 或 待定" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-1">二補金額 (可空白)</label>
+                        <input type="text" id="secondAmount" placeholder="例如：50 或 空白" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-1">付款狀態</label>
+                        <select id="payStatus" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                            <option value="已付款">已付款</option>
+                            <option value="未付款">未付款</option>
+                            <option value="已付款等待二補下單">已付款等待二補下單</option>
+                            <option value="已付款等待票卷序號">已付款等待票卷序號</option>
+                            <option value="已付訂金">已付訂金</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-600 mb-1">跟團日期</label>
-                        <input type="date" id="date" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-600 mb-1">偶像 / 團體名稱</label>
-                        <input type="text" id="groupName" placeholder="例如：Super Junior" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-600 mb-1">品項名稱</label>
-                        <input type="text" id="itemName" placeholder="例如：83z手燈 / 演唱會門票" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-600 mb-1">開團來源</label>
-                        <input type="text" id="source" placeholder="例如：代購小幫手 / 拓元" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-600 mb-1">金額</label>
-                            <input type="text" id="amount" placeholder="例如：500 或 待定" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-600 mb-1">二補金額 (可空白)</label>
-                            <input type="text" id="secondAmount" placeholder="例如：50 或 空白" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-600 mb-1">付款狀態</label>
-                            <select id="payStatus" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
-                                <option value="已付款">已付款</option>
-                                <option value="未付款">未付款</option>
-                                <option value="已付款等待二補下單">已付款等待二補下單</option>
-                                <option value="已付款等待票卷序號">已付款等待票卷序號</option>
-                                <option value="已付訂金">已付訂金</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-600 mb-1">物流狀態</label>
-                            <select id="shipStatus" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
-                                <option value="待到貨/待序號">待到貨/待序號</option>
-                                <option value="已收件">已收件</option>
-                                <option value="面交">面交</option>
-                                <option value="票卷序號已給待取">票卷序號已給待取</option>
-                                <option value="已取票">已取票</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-600 mb-1">備註 (選填)</label>
-                        <textarea id="remark" rows="2" placeholder="例如：座位號碼、後五碼" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"></textarea>
-                    </div>
-                    <div class="flex space-x-2">
-                        <button type="submit" id="submitBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 shadow-md">
-                            送出跟團紀錄
-                        </button>
-                        <button type="button" id="cancelBtn" onclick="resetForm()" class="hidden bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-2 px-3 rounded-lg transition">
-                            取消
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- 右側：跟團清單列表與極精簡的總金額標籤 -->
-            <div class="lg:col-span-2 space-y-4">
-                <div class="bg-white rounded-2xl shadow-md p-6 border border-blue-100">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 id="tableTitle" class="text-xl font-bold text-gray-700">📋 📦 周邊清單</h2>
-                        <button onclick="loadData()" class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1 rounded-lg transition">重新整理</button>
-                    </div>
-                    
-                    <div id="loading" class="text-center py-10 text-gray-400">載入資料中...</div>
-
-                    <div class="overflow-x-auto hidden" id="tableContainer">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="border-b bg-blue-50 text-xs text-gray-600 uppercase">
-                                    <th class="p-3">日期/團體</th>
-                                    <th class="p-3">品項 / 來源</th>
-                                    <th class="p-3">金額 / 二補</th>
-                                    <th class="p-3">狀態</th>
-                                    <th class="p-3 text-center">操作</th>
-                                </tr>
-                            </thead>
-                            <tbody id="orderTableBody" class="text-base divide-y">
-                                <!-- 資料會透過 JavaScript 填入 -->
-                            </tbody>
-                        </table>
+                        <label class="block text-sm font-medium text-gray-600 mb-1">物流狀態</label>
+                        <select id="shipStatus" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                            <option value="待到貨/待序號">待到貨/待序號</option>
+                            <option value="已收件">已收件</option>
+                            <option value="面交">面交</option>
+                            <option value="票卷序號已給待取">票卷序號已給待取</option>
+                            <option value="已取票">已取票</option>
+                        </select>
                     </div>
                 </div>
-
-                <!-- 極精簡的總金額小標籤 -->
-                <div class="bg-white rounded-lg shadow-sm py-2 px-4 inline-block ml-auto border border-blue-100 float-right">
-                    <div class="flex items-center space-x-3">
-                        <span class="text-xs text-gray-500" id="statAmountTitle">周邊總花費</span>
-                        <p id="totalAmount" class="text-lg font-bold text-indigo-600">NT$ ****</p>
-                        <button onclick="toggleAmountVisibility()" id="toggleBtn" class="text-[10px] bg-gray-100 hover:bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded transition">
-                            👁️ 顯示
-                        </button>
-                    </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1">備註 (選填)</label>
+                    <textarea id="remark" rows="2" placeholder="例如：座位號碼、後五碼" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"></textarea>
                 </div>
-            </div>
+                <div class="flex space-x-2 pt-2">
+                    <button type="submit" id="submitBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-xl transition duration-200 shadow-md">
+                        確認送出
+                    </button>
+                    <button type="button" onclick="closeModal()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2.5 px-4 rounded-xl transition">
+                        取消
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -154,6 +166,20 @@
         window.onload = function() {
             loadData();
         };
+
+        // 開啟彈跳視窗 (新增模式)
+        function openModal() {
+            resetForm();
+            document.getElementById('formTitle').innerText = '📝 新增跟團紀錄';
+            document.getElementById('submitBtn').innerText = '確認送出';
+            document.getElementById('category').value = currentTab;
+            document.getElementById('recordModal').classList.remove('hidden');
+        }
+
+        // 關閉彈跳視窗
+        function closeModal() {
+            document.getElementById('recordModal').classList.add('hidden');
+        }
 
         function toggleAmountVisibility() {
             isAmountVisible = !isAmountVisible;
@@ -177,8 +203,6 @@
             const tabTicket = document.getElementById('tabTicket');
             const tableTitle = document.getElementById('tableTitle');
             const statAmountTitle = document.getElementById('statAmountTitle');
-
-            document.getElementById('category').value = tab;
 
             if (tab === '周邊') {
                 tabPeripheral.className = "px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-blue-600 text-white";
@@ -282,6 +306,7 @@
             tableContainer.classList.remove('hidden');
         }
 
+        // 點擊修改按鈕 (開啟彈窗並帶入資料)
         function editItem(id) {
             const item = allDataCache.find(d => d.id === id);
             if (!item) return;
@@ -300,9 +325,7 @@
 
             document.getElementById('formTitle').innerText = '✏️ 修改跟團紀錄';
             document.getElementById('submitBtn').innerText = '儲存修改';
-            document.getElementById('cancelBtn').classList.remove('hidden');
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('recordModal').classList.remove('hidden');
         }
 
         function resetForm() {
@@ -311,9 +334,6 @@
             document.getElementById('category').value = currentTab;
             document.getElementById('date').valueAsDate = new Date();
             document.getElementById('secondAmount').value = '';
-            document.getElementById('formTitle').innerText = '📝 新增跟團紀錄';
-            document.getElementById('submitBtn').innerText = '送出跟團紀錄';
-            document.getElementById('cancelBtn').classList.add('hidden');
         }
 
         function deleteItem(id) {
@@ -368,19 +388,19 @@
             .then(result => {
                 if (result.status === 'success') {
                     alert(editId ? '✨ 成功修改紀錄！' : '✨ 成功新增紀錄！');
-                    resetForm();
+                    closeModal();
                     loadData();
                 } else {
                     alert('儲存失敗：' + result.message);
                 }
                 submitBtn.disabled = false;
-                submitBtn.innerText = editId ? '儲存修改' : '送出跟團紀錄';
+                submitBtn.innerText = editId ? '儲存修改' : '確認送出';
             })
             .catch(error => {
                 console.error('Error:', error);
                 alert('發生錯誤，請稍後再試');
                 submitBtn.disabled = false;
-                submitBtn.innerText = editId ? '儲存修改' : '送出跟團紀錄';
+                submitBtn.innerText = editId ? '儲存修改' : '確認送出';
             });
         });
     </script>
