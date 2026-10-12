@@ -204,6 +204,9 @@
             fetch(`${SCRIPT_URL}?action=getData`)
                 .then(response => response.json())
                 .then(data => {
+                    // 自動依照日期由新到舊排序
+                    data.sort((a, b) => new Date(b.date) - new Date(a.date));
+
                     allDataCache = data;
                     renderTable();
                 })
