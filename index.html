@@ -10,7 +10,7 @@
     <div class="container mx-auto px-4 py-8 max-w-5xl">
         <header class="text-center mb-8">
             <h1 class="text-3xl font-bold text-blue-600 mb-2">✨Zoeeeeee的跟團紀錄✨</h1>
-            <p class="text-gray-500">錢包痛苦！</p>
+            <p class="text-gray-500">!心靈愉快但錢包痛苦！</p>
         </header>
 
         <!-- 總金額統計卡片 -->
@@ -54,9 +54,8 @@
                             <input type="text" id="amount" placeholder="例如：500 或 待定" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-600 mb-1">二補金額</label>
-                            <!-- 修正：id 改為 secondAmount -->
-                            <input type="text" id="secondAmount" placeholder="例如：50 或 待定" value="0" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                            <label class="block text-sm font-medium text-gray-600 mb-1">二補金額 (可空白)</label>
+                            <input type="text" id="secondAmount" placeholder="例如：50 或 空白" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
@@ -153,14 +152,14 @@
                     } else {
                         data.forEach(item => {
                             let mainAmount = isNaN(Number(item.amount)) ? 0 : Number(item.amount);
-                            let secondAmount = isNaN(Number(item.secondAmount)) ? 0 : Number(item.secondAmount);
+                            let secondAmount = isNaN(Number(item.secondAmount)) || item.secondAmount === '' ? 0 : Number(item.secondAmount);
                             totalAmount += (mainAmount + secondAmount);
                             
                             let payBadgeColor = item.payStatus === '已付款' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700';
                             let shipBadgeColor = item.shipStatus === '已收件' ? 'bg-blue-100 text-blue-700' : 'bg-indigo-100 text-indigo-700';
 
                             let amountDisplay = isNaN(Number(item.amount)) || item.amount === '' ? (item.amount || '待定') : `NT$ ${Number(item.amount).toLocaleString()}`;
-                            let secondDisplay = secondAmount > 0 ? `<br><span class="text-xs text-purple-600">二補: NT$ ${secondAmount.toLocaleString()}</span>` : '';
+                            let secondDisplay = (item.secondAmount !== '' && item.secondAmount !== 0 && !isNaN(Number(item.secondAmount))) ? `<br><span class="text-xs text-purple-600">二補: NT$ ${Number(item.secondAmount).toLocaleString()}</span>` : '';
 
                             let tr = document.createElement('tr');
                             tr.innerHTML = `
@@ -213,7 +212,7 @@
             document.getElementById('itemName').value = item.itemName || '';
             document.getElementById('source').value = item.source || '';
             document.getElementById('amount').value = item.amount || '';
-            document.getElementById('secondAmount').value = item.secondAmount || 0;
+            document.getElementById('secondAmount').value = (item.secondAmount !== 0 && item.secondAmount !== '0') ? item.secondAmount : '';
             document.getElementById('payStatus').value = item.payStatus || '已付款';
             document.getElementById('shipStatus').value = item.shipStatus || '待到貨';
             document.getElementById('remark').value = item.remark || '';
@@ -230,7 +229,7 @@
             document.getElementById('orderForm').reset();
             document.getElementById('editId').value = '';
             document.getElementById('date').valueAsDate = new Date();
-            document.getElementById('secondAmount').value = 0;
+            document.getElementById('secondAmount').value = '';
             document.getElementById('formTitle').innerText = '📝 新增跟團紀錄';
             document.getElementById('submitBtn').innerText = '送出跟團紀錄';
             document.getElementById('cancelBtn').classList.add('hidden');
@@ -275,7 +274,7 @@
                 itemName: document.getElementById('itemName').value,
                 source: document.getElementById('source').value,
                 amount: document.getElementById('amount').value,
-                secondAmount: document.getElementById('secondAmount').value || 0,
+                secondAmount: document.getElementById('secondAmount').value || '',
                 payStatus: document.getElementById('payStatus').value,
                 shipStatus: document.getElementById('shipStatus').value,
                 remark: document.getElementById('remark').value
