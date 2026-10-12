@@ -7,33 +7,33 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-blue-50 min-h-screen font-sans text-gray-800">
-    <div class="container mx-auto px-4 py-8 max-w-5xl">
+    <div class="container mx-auto px-3 py-6 max-w-5xl">
         <header class="text-center mb-6">
             <h1 class="text-3xl font-bold text-blue-600 mb-2">✨Zoeeeeee的跟團紀錄✨</h1>
             <p class="text-gray-500">追星之路心靈富足但錢包極度痛苦rrrrr！</p>
         </header>
 
         <!-- 分頁切換與新增按鈕列 -->
-        <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-            <!-- 分頁切換按鈕 -->
-            <div class="flex space-x-4">
-                <button onclick="switchTab('周邊')" id="tabPeripheral" class="px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-blue-600 text-white">
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-3">
+            <!-- 分頁切換按鈕 (手機上並排填滿) -->
+            <div class="flex space-x-2 w-full sm:w-auto">
+                <button onclick="switchTab('周邊')" id="tabPeripheral" class="flex-1 sm:flex-none px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-blue-600 text-white">
                     📦 周邊紀錄
                 </button>
-                <button onclick="switchTab('票卷')" id="tabTicket" class="px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-white text-gray-600 border border-blue-200 hover:bg-blue-50">
+                <button onclick="switchTab('票卷')" id="tabTicket" class="flex-1 sm:flex-none px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-white text-gray-600 border border-blue-200 hover:bg-blue-50">
                     🎫 票卷紀錄
                 </button>
             </div>
 
-            <!-- 新增紀錄按鈕 -->
-            <button onclick="openModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2.5 rounded-xl shadow-md transition flex items-center space-x-2">
+            <!-- 新增紀錄按鈕 (手機上寬度 100%) -->
+            <button onclick="openModal()" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2.5 rounded-xl shadow-md transition flex items-center justify-center space-x-2">
                 <span>➕ 新增紀錄</span>
             </button>
         </div>
 
         <!-- 全版面清單與極精簡總金額標籤 -->
         <div class="space-y-4">
-            <div class="bg-white rounded-2xl shadow-md p-6 border border-blue-100">
+            <div class="bg-white rounded-2xl shadow-md p-4 sm:p-6 border border-blue-100">
                 <div class="flex justify-between items-center mb-4">
                     <h2 id="tableTitle" class="text-xl font-bold text-gray-700">📋 📦 周邊清單</h2>
                     <button onclick="loadData()" class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1 rounded-lg transition">重新整理</button>
@@ -45,14 +45,14 @@
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="border-b bg-blue-50 text-xs text-gray-600 uppercase">
-                                <th class="p-3">日期/團體</th>
-                                <th class="p-3">品項 / 來源</th>
-                                <th class="p-3">金額 / 二補</th>
-                                <th class="p-3">狀態</th>
-                                <th class="p-3 text-center">操作</th>
+                                <th class="p-2 sm:p-3">日期/團體</th>
+                                <th class="p-2 sm:p-3">品項 / 來源</th>
+                                <th class="p-2 sm:p-3">金額 / 二補</th>
+                                <th class="p-2 sm:p-3">狀態</th>
+                                <th class="p-2 sm:p-3 text-center">操作</th>
                             </tr>
                         </thead>
-                        <tbody id="orderTableBody" class="text-base divide-y">
+                        <tbody id="orderTableBody" class="text-sm sm:text-base divide-y">
                             <!-- 資料會透過 JavaScript 填入 -->
                         </tbody>
                     </table>
@@ -167,7 +167,6 @@
             loadData();
         };
 
-        // 開啟彈跳視窗 (新增模式)
         function openModal() {
             resetForm();
             document.getElementById('formTitle').innerText = '📝 新增跟團紀錄';
@@ -176,7 +175,6 @@
             document.getElementById('recordModal').classList.remove('hidden');
         }
 
-        // 關閉彈跳視窗
         function closeModal() {
             document.getElementById('recordModal').classList.add('hidden');
         }
@@ -205,13 +203,13 @@
             const statAmountTitle = document.getElementById('statAmountTitle');
 
             if (tab === '周邊') {
-                tabPeripheral.className = "px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-blue-600 text-white";
-                tabTicket.className = "px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-white text-gray-600 border border-blue-200 hover:bg-blue-50";
+                tabPeripheral.className = "flex-1 sm:flex-none px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-blue-600 text-white";
+                tabTicket.className = "flex-1 sm:flex-none px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-white text-gray-600 border border-blue-200 hover:bg-blue-50";
                 tableTitle.innerText = "📋 📦 周邊清單";
                 statAmountTitle.innerText = "周邊總花費";
             } else {
-                tabTicket.className = "px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-blue-600 text-white";
-                tabPeripheral.className = "px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-white text-gray-600 border border-blue-200 hover:bg-blue-50";
+                tabTicket.className = "flex-1 sm:flex-none px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-blue-600 text-white";
+                tabPeripheral.className = "flex-1 sm:flex-none px-6 py-2.5 rounded-xl font-bold text-base transition shadow-sm bg-white text-gray-600 border border-blue-200 hover:bg-blue-50";
                 tableTitle.innerText = "📋 🎫 票卷清單";
                 statAmountTitle.innerText = "票卷總花費";
             }
@@ -228,9 +226,7 @@
             fetch(`${SCRIPT_URL}?action=getData`)
                 .then(response => response.json())
                 .then(data => {
-                    // 自動依照日期由新到舊排序
                     data.sort((a, b) => new Date(b.date) - new Date(a.date));
-
                     allDataCache = data;
                     renderTable();
                 })
@@ -263,32 +259,35 @@
                     let shipBadgeColor = item.shipStatus === '已收件' ? 'bg-blue-100 text-blue-700' : 'bg-indigo-100 text-indigo-700';
 
                     let amountDisplay = isNaN(Number(item.amount)) || item.amount === '' ? (item.amount || '待定') : `NT$ ${Number(item.amount).toLocaleString()}`;
-                    let secondDisplay = (item.secondAmount !== '' && item.secondAmount !== 0 && !isNaN(Number(item.secondAmount))) ? `<br><span class="text-sm text-purple-600">二補: NT$ ${Number(item.secondAmount).toLocaleString()}</span>` : '';
+                    let secondDisplay = (item.secondAmount !== '' && item.secondAmount !== 0 && !isNaN(Number(item.secondAmount))) ? `<br><span class="text-xs sm:text-sm text-purple-600">二補: NT$ ${Number(item.secondAmount).toLocaleString()}</span>` : '';
 
-                    let remarkDisplay = (item.remark && item.remark.trim() !== '') ? `<div class="text-sm text-gray-500 mt-1">備註: ${item.remark}</div>` : '';
+                    let remarkDisplay = (item.remark && item.remark.trim() !== '') ? `<div class="text-xs sm:text-sm text-gray-500 mt-1">備註: ${item.remark}</div>` : '';
 
                     let tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td class="p-3 align-top">
-                            <div class="text-xs text-gray-400">${item.date ? String(item.date).substring(0, 10) : ''}</div>
-                            <div class="font-bold text-blue-600 text-lg">${item.groupName || ''}</div>
+                        <td class="p-2 sm:p-3 align-top">
+                            <div class="text-[11px] sm:text-xs text-gray-400">${item.date ? String(item.date).substring(0, 10) : ''}</div>
+                            <div class="font-bold text-blue-600 text-base sm:text-lg">${item.groupName || ''}</div>
                         </td>
-                        <td class="p-3 align-top">
-                            <div class="font-medium text-gray-900">${item.itemName || ''}</div>
-                            <div class="text-sm text-gray-500">${item.source || ''}</div>
+                        <td class="p-2 sm:p-3 align-top">
+                            <div class="font-medium text-gray-900 text-sm sm:text-base">${item.itemName || ''}</div>
+                            <div class="text-xs sm:text-sm text-gray-500">${item.source || ''}</div>
                             ${remarkDisplay}
                         </td>
-                        <td class="p-3 align-top font-semibold text-gray-700">
+                        <td class="p-2 sm:p-3 align-top font-semibold text-gray-700 text-sm sm:text-base">
                             ${amountDisplay}
                             ${secondDisplay}
                         </td>
-                        <td class="p-3 align-top space-y-1">
-                            <span class="inline-block px-2 py-0.5 rounded text-xs ${payBadgeColor}">${item.payStatus || ''}</span><br>
-                            <span class="inline-block px-2 py-0.5 rounded text-xs ${shipBadgeColor}">${item.shipStatus || ''}</span>
+                        <td class="p-2 sm:p-3 align-top space-y-1">
+                            <span class="inline-block px-1.5 py-0.5 rounded text-[11px] sm:text-xs ${payBadgeColor}">${item.payStatus || ''}</span><br>
+                            <span class="inline-block px-1.5 py-0.5 rounded text-[11px] sm:text-xs ${shipBadgeColor}">${item.shipStatus || ''}</span>
                         </td>
-                        <td class="p-3 align-top text-center space-x-1">
-                            <button onclick="editItem('${item.id}')" class="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 text-xs px-2.5 py-1.5 rounded transition">修改</button>
-                            <button onclick="deleteItem('${item.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 text-xs px-2.5 py-1.5 rounded transition">刪除</button>
+                        <!-- 修改與刪除按鈕並排設計 -->
+                        <td class="p-2 sm:p-3 align-top text-center">
+                            <div class="flex flex-row justify-center items-center gap-1">
+                                <button onclick="editItem('${item.id}')" class="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 text-xs px-2 py-1 rounded transition">修改</button>
+                                <button onclick="deleteItem('${item.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 text-xs px-2 py-1 rounded transition">刪除</button>
+                            </div>
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -306,7 +305,6 @@
             tableContainer.classList.remove('hidden');
         }
 
-        // 點擊修改按鈕 (開啟彈窗並帶入資料)
         function editItem(id) {
             const item = allDataCache.find(d => d.id === id);
             if (!item) return;
