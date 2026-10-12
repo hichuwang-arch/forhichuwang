@@ -55,7 +55,7 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-600 mb-1">二補金額</label>
-                            <input type="number" id="secondAmount" placeholder="0" value="0" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                            <input type="text" id="amount" placeholder="例如：50 或 待定" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
@@ -72,11 +72,12 @@
                             <select id="shipStatus" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
                                 <option value="待到貨">待到貨</option>
                                 <option value="已收件">已收件</option>
+                                <option value="面交">面交</option>
                             </select>
                         </div>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-600 mb-1">備註 (匯款後五碼、網址等)</label>
+                        <label class="block text-sm font-medium text-gray-600 mb-1">備註</label>
                         <textarea id="remark" rows="2" placeholder="例如：後五碼 12345" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"></textarea>
                     </div>
                     <div class="flex space-x-2">
