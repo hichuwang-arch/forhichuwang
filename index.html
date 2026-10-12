@@ -21,7 +21,7 @@
             </div>
             <div class="h-10 w-px bg-gray-200 hidden sm:block"></div>
             <div class="text-center">
-                <p class="text-sm text-gray-500">總花費金額</p>
+                <p class="text-sm text-gray-500">總花費金額 (含二補)</p>
                 <p id="totalAmount" class="text-2xl font-bold text-indigo-600">NT$ 0</p>
             </div>
         </div>
@@ -47,9 +47,15 @@
                         <label class="block text-sm font-medium text-gray-600 mb-1">開團來源 / 站子</label>
                         <input type="text" id="source" placeholder="例如：代購小幫手" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-600 mb-1">金額 (NT$)</label>
-                        <input type="number" id="amount" placeholder="0" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-1">金額 (可填數字/待定)</label>
+                            <input type="text" id="amount" placeholder="例如：500 或 待定" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-1">二補金額</label>
+                            <input type="number" id="secondAmount" placeholder="0" value="0" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                        </div>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
@@ -93,7 +99,7 @@
                             <tr class="border-b bg-blue-50 text-xs text-gray-600 uppercase">
                                 <th class="p-3">日期/團體</th>
                                 <th class="p-3">品項 / 來源</th>
-                                <th class="p-3">金額</th>
+                                <th class="p-3">金額 / 二補</th>
                                 <th class="p-3">狀態</th>
                                 <th class="p-3">備註</th>
                             </tr>
@@ -108,18 +114,14 @@
     </div>
 
     <script>
-        // 設定你的 Google Apps Script 網址
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwO1NkMRVwy2EEp5N3N9-MA7icAmZOxaMGV3kxTAg7yjyDewf8-PWcuW8lUxqIBtuT-LQ/exec';
 
-        // 預設日期帶入今天
         document.getElementById('date').valueAsDate = new Date();
 
-        // 頁面載入時抓取資料
         window.onload = function() {
             loadData();
         };
 
-        // 抓取資料函式
         function loadData() {
             const loading = document.getElementById('loading');
             const tableContainer = document.getElementById('tableContainer');
@@ -139,11 +141,16 @@
                         tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-gray-400">目前沒有任何跟團紀錄喔！</td></tr>`;
                     } else {
                         data.forEach(item => {
-                            let amountVal = Number(item.amount || 0);
-                            totalAmount += amountVal;
+                            // 計算總金額（如果是數字就加總，非數字如「待定」則略過不加進總花費）
+                            let mainAmount = isNaN(Number(item.amount)) ? 0 : Number(item.amount);
+                            let secondAmount = isNaN(Number(item.secondAmount)) ? 0 : Number(item.secondAmount);
+                            totalAmount += (mainAmount + secondAmount);
                             
                             let payBadgeColor = item.payStatus === '已付款' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700';
                             let shipBadgeColor = item.shipStatus === '已收件' ? 'bg-blue-100 text-blue-700' : 'bg-indigo-100 text-indigo-700';
+
+                            let amountDisplay = isNaN(Number(item.amount)) ? item.amount : `NT$ ${Number(item.amount).toLocaleString()}`;
+                            let secondDisplay = secondAmount > 0 ? `<br><span class="text-xs text-purple-600">二補: NT$ ${secondAmount.toLocaleString()}</span>` : '';
 
                             let tr = document.createElement('tr');
                             tr.innerHTML = `
@@ -155,7 +162,10 @@
                                     <div class="font-medium text-gray-800">${item.itemName || ''}</div>
                                     <div class="text-xs text-gray-500">${item.source || ''}</div>
                                 </td>
-                                <td class="p-3 font-semibold text-gray-700">NT$ ${amountVal.toLocaleString()}</td>
+                                <td class="p-3 font-semibold text-gray-700">
+                                    ${amountDisplay}
+                                    ${secondDisplay}
+                                </td>
                                 <td class="p-3 space-y-1">
                                     <span class="inline-block px-2 py-0.5 rounded text-xs ${payBadgeColor}">${item.payStatus || ''}</span><br>
                                     <span class="inline-block px-2 py-0.5 rounded text-xs ${shipBadgeColor}">${item.shipStatus || ''}</span>
@@ -178,7 +188,6 @@
                 });
         }
 
-        // 表單送出事件
         document.getElementById('orderForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const submitBtn = document.getElementById('submitBtn');
@@ -191,6 +200,7 @@
                 itemName: document.getElementById('itemName').value,
                 source: document.getElementById('source').value,
                 amount: document.getElementById('amount').value,
+                secondAmount: document.getElementById('secondAmount').value || 0,
                 payStatus: document.getElementById('payStatus').value,
                 shipStatus: document.getElementById('shipStatus').value,
                 remark: document.getElementById('remark').value
@@ -206,6 +216,7 @@
                     alert('✨ 成功新增跟團紀錄！');
                     document.getElementById('orderForm').reset();
                     document.getElementById('date').valueAsDate = new Date();
+                    document.getElementById('secondAmount').value = 0;
                     loadData();
                 } else {
                     alert('儲存失敗：' + result.message);
